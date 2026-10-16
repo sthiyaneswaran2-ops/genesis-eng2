@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Bible Quiz</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #3f74b9, #ede9fe);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .quiz-container {
+            background: white;
+            width: 100%;
+            max-width: 550px;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4338ca;
+            font-size: 27px;
+            margin-top: 0;
+        }
+
+        .intro {
+            text-align: center;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        #participant-name {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0 18px;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        #participant-name:focus {
+            outline: 2px solid #6366f1;
+            border-color: #6366f1;
+        }
+
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 14px;
+            color: #555;
+            margin: 20px 0 12px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: #dbeafe;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #4f46e5;
+            transition: width 0.3s ease;
+        }
+
+        #question {
+            font-size: 21px;
+            line-height: 1.5;
+            color: #222;
+            margin-top: 25px;
+            white-space: pre-line;
+        }
+
+        #options {
+            display: grid;
+            gap: 12px;
+            margin: 22px 0;
+        }
+
+          .option {
+    width: 100%;
+    min-height: 50px;
+    padding: 14px;
+    border: 2px solid #d1d5db;
+    border-radius: 10px;
+    background: white;
+    color: #222;
+    font-size: 16px;
+    text-align: left;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+     .option:hover:not(:disabled) {
+            border-color: #6366f1;
+            background: #eef2ff;
+        }
+
+        .option.correct {
+            background: #dcfce7;
+            border-color: #16a34a;
+        }
+
+        .option.wrong {
+            background: #fee2e2;
+            border-color: #dc2626;
+        }
+
+        .option:disabled {
+            cursor: default;
+            opacity: 1;
+        }
+
+        #feedback {
+            min-height: 24px;
+            line-height: 1.5;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        .main-button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #4f46e5;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .main-button:hover:not(:disabled) { background: #3730a3; }
+
+        .main-button:disabled {
+            background: #a5b4fc;
+            cursor: not-allowed;
+        }
+
+        #result { text-align: center; }
+
+        #final-score {
+            font-size: 23px;
+            font-weight: bold;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .hidden { display: none !important; }
+
+        .result-mode {
+            padding: 22px;
+            margin: 20px 0;
+            border-radius: 18px;
+            text-align: center;
+            animation: popIn 0.6s ease;
+        }
+
+        .result-mode[hidden] { display: none; }
+
+        .happy-mode {
+            background: linear-gradient(135deg, #d4fc79, #96e6a1);
+            color: #14532d;
+        }
+
+        .sad-mode {
+            background: linear-gradient(135deg, #dbeafe, #e9d5ff);
+            color: #3730a3;
+        }
+
+        .result-emoji {
+            font-size: 65px;
+            margin: 10px;
+        }
+
+        .result-mode h2 {
+            font-size: 26px;
+            margin: 10px 0;
+            color: inherit;
+        }
+
+        .result-mode p {
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        #submission-status {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .quiz-container { padding: 20px; }
+            h1 { font-size: 23px; }
+            #question { font-size: 18px; }
+            .option { font-size: 15px; padding: 12px; }
+        }
+    </style>
+</head>
+
+<body>
+<main class="quiz-container">
+
+    <!-- REGISTRATION PAGE -->
+    <section id="register">
+        <h1>ஆதியாகமம் வினாடி வினா</h1>
+        <p class="intro">
+            Welcome to the Tamil Bible Quiz!<br>
+            Please enter your name before starting.
+        </p>
+
+        <form id="register-form">
+            <label for="participant-name">Participant Name / பங்கேற்பாளர் பெயர்</label>
+            <input
+                type="text"
+                id="participant-name"
+                placeholder="Enter your full name"
+                required
+                maxlength="100"
+                autocomplete="name"
+            >
+            <button type="submit" class="main-button">Start Quiz / வினாடி வினாவைத் தொடங்கு</button>
+        </form>
+    </section>
+
+    <!-- QUIZ AREA -->
+    <section id="quiz" class="hidden">
+        <h1>Genesis Bible Quiz</h1>
+
+        <div class="quiz-info">
+            <span id="question-count">Question 1 of 20</span>
+            <span id="score">Score: 0</span>
+        </div>
+
+        <div class="progress-track">
+            <div id="progress-bar"></div>
+        </div>
+
+        <h2 id="question">Loading question...</h2>
+        <div id="options"></div>
+        <p id="feedback" aria-live="polite"></p>
+
+        <button id="next-btn" class="main-button" disabled>Next Question</button>
+    </section>
+
+    <!-- FINAL RESULT AREA -->
+    <section id="result" class="hidden" aria-live="polite">
+        <h2>Quiz Completed! </h2>
+        <p id="final-score"></p>
+        <p id="message"></p>
+
+        <div id="resultMode" class="result-mode" hidden>
+            <div id="resultEmoji" class="result-emoji"></div>
+            <h2 id="resultTitle"></h2>
+            <p id="resultMessage"></p>
+        </div>
+
+        <p id="submission-status"></p>
+
+        <button id="restart-btn" class="main-button">Play Again </button>
+    </section>
+
+</main>
+
+<script>
+    /*
+      GOOGLE SHEETS SETUP:
+      After deploying your Google Apps Script as a Web app,
+      paste the URL ending in /exec between the quotation marks below.
+    */
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8TfTZp_7N-X58hri_EOzEgWA5_JKH7ZT1jnJy90UGIwYmS7s1TZk59odKuSPvBbya/exec";
+    // QUESTIONS AND ANSWERS
+    const questions = [
+        {
+            question: "On which day did God end His work and take rest?",
+            options: ["Five", "Six", "Seven", "Eight"],
+            answer: 2
+        },
+        {
+            question: "What did God do to the Seventh Day?",
+            options: ["Blessed", "Sanctified", "Made it as Sabbath Day", "A and B"],
+            answer: 3
+        },
+        {
+            question: "A _____ went up from the earth and watered the whole face of the ground.",
+            options: ["Rain", "Mist", "Snow", "Heavy Rain"],
+            answer: 1
+        },
+        {
+            question: "The Lord God formed man of the ______.",
+            options: ["Breath", "Rib bone", "Dust of the ground", "Clay"],
+            answer: 2
+        },
+        {
+            question: "The Lord God planted a garden _______ in Eden, and there He put the man whom He had formed.",
+            options: ["Eastward", "Northward", "Westward", "Southward"],
+            answer: 0
+        },
+        {
+            question: "In the land of Havilah there is ____, and the _____ of that land is good.",
+            options: ["Crops", "Silver", "Trees", "Gold"],
+            answer: 3
+        },
+        {
+            question: "The river which goes around the whole land of Cush is ______.",
+            options: ["Pishon", "Gihon", "Hiddekel", "Euphrates"],
+            answer: 1
+        },
+        {
+            question: "The river which goes toward the east of Assyria is _____.",
+            options: ["Pishon", "Gihon", "Hiddekel", "Euphrates"],
+            answer: 2
+        },
+        {
+            question: "Where did God make the tree of life and the tree of the knowledge of good and evil to grow?",
+            options: ["In the midst of the garden", "Outside the garden ", "Inside the garden", "In the garden"],
+            answer: 0
+        },
+        {
+            question: "The Lord God said, It is not good that man should be alone; I will make him a ____ comparable to him.",
+            options: ["Wife", "Companion", "Helper", "Woman"],
+            answer: 2
+        },
+        {
+            question: "Who said: This is now bone of my bones And flesh of my flesh?",
+            options: ["Adam", "Eve", "Cain", "Abel"],
+            answer: 0
+        },
+        {
+            question: "Out of what did the Lord God make a woman?",
+            options: ["Word", "Blood", "Rib", "Flesh"],
+            answer: 2
+        },
+        {
+            question: "What is the name of the first river?",
+            options: ["Euphrates", "Gihon", "Hidekkel", "Pishon"],
+            answer: 3
+        },
+        {
+            question: "Who tills the ground?",
+            options: ["Man", "Woman", "Animal", "Serpent"],
+            answer: 0
+        },
+        {
+            question: "Who named all the living creatures?",
+            options: ["Eve", "Adam", "Cain", "Abel"],
+            answer: 1
+        },
+        {
+            question: "A river went out of _____ to water the garden.",
+            options: ["Havilah", "Assyria", "Cush", "Eden"],
+            answer: 3
+        },
+        {
+            question: "How many riverheads did the river part into?",
+            options: ["Two", "Three", "Four", "Five"],
+            answer: 2
+        },
+        {
+            question: "Bdellium and the onyx stone are there in ______.",
+            options: ["Havilah", "Assyria", "Cush", "Eden"],
+            answer: 0
+        },
+        {
+            question: "The Lord God commanded the man, saying, Of _____ you may freely eat.",
+            options: ["The tree of the knowledge of good and evil ", "The tree of life", "Every tree of the garden", "No tree"],
+            answer: 2
+        },
+        {
+            question: "But of the ______ you shall not eat.",
+            options: ["Tree of the knowledge of good and evil", "Tree of Life", "Every tree of the garden", "None of the above"],
+            answer: 0
+        }
+    ];
+
+    // VARIABLES
+    let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+    let participantName = "";
+    let resultSubmitted = false;
+
+    // HTML ELEMENTS
+    const registerSection = document.getElementById("register");
+    const registerForm = document.getElementById("register-form");
+    const nameInput = document.getElementById("participant-name");
+    const quizSection = document.getElementById("quiz");
+    const resultSection = document.getElementById("result");
+    const questionElement = document.getElementById("question");
+    const optionsElement = document.getElementById("options");
+    const countElement = document.getElementById("question-count");
+    const scoreElement = document.getElementById("score");
+    const feedbackElement = document.getElementById("feedback");
+    const progressBar = document.getElementById("progress-bar");
+    const nextButton = document.getElementById("next-btn");
+    const restartButton = document.getElementById("restart-btn");
+    const submissionStatus = document.getElementById("submission-status");
+
+    // REGISTRATION
+    registerForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        participantName = nameInput.value.trim();
+
+        if (!participantName) {
+            alert("Please enter your name.");
+            nameInput.focus();
+            return;
+        }
+
+        currentQuestion = 0;
+        score = 0;
+        answered = false;
+        resultSubmitted = false;
+        scoreElement.textContent = "Score: 0";
+
+        registerSection.classList.add("hidden");
+        resultSection.classList.add("hidden");
+        quizSection.classList.remove("hidden");
+
+        showQuestion();
+    });
+
+    // DISPLAY A QUESTION
+    function showQuestion() {
+        answered = false;
+        const current = questions[currentQuestion];
+
+        countElement.textContent =
+            `Question ${currentQuestion + 1} of ${questions.length}`;
+        questionElement.textContent = current.question;
+        optionsElement.innerHTML = "";
+        feedbackElement.textContent = "";
+        nextButton.disabled = true;
+
+        nextButton.textContent =
+            currentQuestion === questions.length - 1
+                ? "See Final Score"
+                : "Next Question";
+
+        progressBar.style.width =
+            `${(currentQuestion / questions.length) * 100}%`;
+
+        current.options.forEach(function(option, index) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "option";
+            button.textContent = String.fromCharCode(65 + index) + ". " + option;
+
+            button.addEventListener("click", function() {
+                selectAnswer(index, button);
+            });
+
+            optionsElement.appendChild(button);
+        });
+    }
+
+    // CHECK ANSWER
+    function selectAnswer(selectedIndex, selectedButton) {
+        if (answered) return;
+        answered = true;
+
+        const correctIndex = questions[currentQuestion].answer;
+        const allOptions = optionsElement.querySelectorAll(".option");
+
+        allOptions.forEach(function(button, index) {
+            button.disabled = true;
+            if (index === correctIndex) button.classList.add("correct");
+        });
+
+        if (selectedIndex === correctIndex) {
+            score++;
+            feedbackElement.textContent = "Correct! Well done!";
+            feedbackElement.style.color = "#15803d";
+        } else {
+            selectedButton.classList.add("wrong");
+            feedbackElement.textContent =
+                "Incorrect! Correct answer: " +
+                questions[currentQuestion].options[correctIndex];
+            feedbackElement.style.color = "#dc2626";
+        }
+
+        scoreElement.textContent = "Score: " + score;
+        nextButton.disabled = false;
+    }
+
+    // NEXT QUESTION
+    nextButton.addEventListener("click", function() {
+        if (!answered) return;
+
+        currentQuestion++;
+
+        if (currentQuestion < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    });
+
+    // HAPPY MODE OR SAD MODE
+    function showResultMode(finalScore, totalQuestions) {
+        const percentage = (finalScore / totalQuestions) * 100;
+        const resultMode = document.getElementById("resultMode");
+        const resultEmoji = document.getElementById("resultEmoji");
+        const resultTitle = document.getElementById("resultTitle");
+        const resultMessage = document.getElementById("resultMessage");
+
+        resultMode.hidden = false;
+        resultMode.classList.remove("happy-mode", "sad-mode");
+
+        if (percentage >= 70) {
+            resultMode.classList.add("happy-mode");
+            resultEmoji.textContent = "🥳🎉";
+            resultTitle.textContent = "Excellent!";
+            resultMessage.textContent =
+                "The horse is prepared for the day of battle, But deliverance is of the Lord. (Proverbs 21:31)";
+        } else {
+            resultMode.classList.add("sad-mode");
+            resultEmoji.textContent = "😢";
+            resultTitle.textContent = "Don't Give Up!";
+            resultMessage.textContent =
+                "Keep reading the Bible and practising. You can do even better next time!";
+        }
+    }
+
+    // SEND RESULT TO GOOGLE SHEETS
+    async function sendResultToGoogleSheets() {
+        if (
+            !SCRIPT_URL ||
+            SCRIPT_URL === "PASTE_YOUR_WEB_APP_URL_HERE"
+        ) {
+            submissionStatus.textContent =
+                "Results are not connected to Google Sheets yet. Add your Apps Script Web app URL to enable result collection.";
+            return;
+        }
+
+        const resultData = {
+            name: participantName,
+            score: score,
+            total: questions.length
+        };
+
+        submissionStatus.textContent = "Submitting your result...";
+
+        try {
+            // no-cors sends the request but does not let the browser read the response.
+            await fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify(resultData)
+            });
+
+            submissionStatus.textContent =
+                "Your result submission was sent. The browser cannot confirm whether the spreadsheet saved it.";
+        } catch (error) {
+            console.error("Result submission failed:", error);
+            submissionStatus.textContent =
+                "Could not send the result. Please check your internet connection or contact the quiz organiser.";
+        }
+    }
+
+    // SHOW FINAL SCORE
+    function showResult() {
+        quizSection.classList.add("hidden");
+        resultSection.classList.remove("hidden");
+        progressBar.style.width = "100%";
+
+        document.getElementById("final-score").textContent =
+            participantName + " — Your Score: " + score + " / " + questions.length;
+
+        const percentage = (score / questions.length) * 100;
+        let message;
+
+        if (percentage === 100) {
+            message = "Excellent! You answered every question correctly!";
+        } else if (percentage >= 70) {
+            message = "Great job! Keep learning!";
+        } else if (percentage >= 40) {
+            message = "Good effort! Practise and try again.";
+        } else {
+            message = "Keep practising. You can improve!";
+        }
+
+        document.getElementById("message").textContent =
+            message + " Percentage: " + percentage.toFixed(1) + "%";
+
+        showResultMode(score, questions.length);
+
+        if (!resultSubmitted) {
+            resultSubmitted = true;
+            sendResultToGoogleSheets();
+        }
+    }
+
+    // RESTART: ASK FOR THE NAME AGAIN
+    restartButton.addEventListener("click", function() {
+        currentQuestion = 0;
+        score = 0;
+        answered = false;
+        resultSubmitted = false;
+        participantName = "";
+
+        scoreElement.textContent = "Score: 0";
+        resultSection.classList.add("hidden");
+        quizSection.classList.add("hidden");
+        registerSection.classList.remove("hidden");
+
+        document.getElementById("resultMode").hidden = true;
+        nameInput.value = "";
+        submissionStatus.textContent = "";
+        nameInput.focus();
+    });
+</script>
+</body>
+</html>
